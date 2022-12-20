@@ -12,8 +12,10 @@
           v-model="selectedFilters"
           :value="checkbox.value"
           :id="checkbox.value"
+          :disabled="disabled"
           type="checkbox"
           class="aviasales-filters__checkboxes__item-value"
+          @change="changeFilter"
         />
         <label :for="checkbox.value">{{ checkbox.text }}</label>
       </div>
@@ -30,13 +32,25 @@ export default {
       type: Array,
       default: () => [],
     },
+    modelValue: {
+      type: Array,
+      default: () => [],
+    },
+    disabled: {
+      type: Boolean,
+      default: true,
+    },
   },
-  data() {
-    return {
-      selectedFilters: [],
-    };
+  computed: {
+    selectedFilters: {
+      get() {
+        return this.modelValue;
+      },
+      set(v) {
+        this.$emit("update:modelValue", v);
+      },
+    },
   },
-  computed: {},
   methods: {
     checkboxClasses(checkbox) {
       return [
@@ -46,23 +60,33 @@ export default {
         },
       ];
     },
+    changeFilter() {
+      this.$emit("on-filter");
+    },
   },
 };
 </script>
 
 <style lang="sass">
 $blue: #2196F3
-$duration: 0.4s
+$duration: 0.3s
 
 .aviasales-filters
   width: 232px
   height: max-content
   padding: 10px 0
+  @media (max-width: 768px)
+    width: 100%
   &__title
     padding: 10px 20px
   &__checkboxes
     display: flex
     flex-direction: column
+    @media (max-width: 768px)
+    flex-direction: column
+    @media (max-width: 768px)
+      flex-direction: row
+      flex-wrap: wrap
     &__item
       display: flex
       align-items: center
@@ -70,6 +94,8 @@ $duration: 0.4s
       padding: 10px 20px
       cursor: pointer
       transition-duration: $duration
+      @media (max-width: 768px)
+        font-size: 12px
     &__item-value
       width: 20px
       height: 20px
@@ -78,6 +104,9 @@ $duration: 0.4s
       display: grid
       place-content: center
       transition-duration: $duration
+      &:disabled
+        opacity: 0.7
+        cursor: not-allowed
       &::before
         content: '✓'
         font-size: 12px

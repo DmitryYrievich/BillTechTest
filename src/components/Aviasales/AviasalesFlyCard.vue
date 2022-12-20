@@ -14,9 +14,33 @@
         :key="segmentIndex"
         class="aviasales-fly-card__body__segment"
       >
-        {{ timeRange(segment.date, segment.duration) }}
-        <br />
-        {{ timeDuration(segment.date, segment.duration) }}
+        <div class="aviasales-fly-card__body__segment__box">
+          <p class="aviasales-fly-card__body__segment__box-header">
+            {{ segment.origin }} - {{ segment.destination }}
+          </p>
+          <p class="aviasales-fly-card__body__segment__box-value">
+            {{ timeRange(segment.date, segment.duration) }}
+          </p>
+        </div>
+
+        <div class="aviasales-fly-card__body__segment__box">
+          <p class="aviasales-fly-card__body__segment__box-header">В пути</p>
+          <p class="aviasales-fly-card__body__segment__box-value">
+            {{ timeDuration(segment.date, segment.duration) }}
+          </p>
+        </div>
+
+        <div
+          v-if="segment.stops.length"
+          class="aviasales-fly-card__body__segment__box"
+        >
+          <p class="aviasales-fly-card__body__segment__box-header">
+            {{ transfersQuantity(segment.stops) }}
+          </p>
+          <p class="aviasales-fly-card__body__segment__box-value">
+            {{ stopsName(segment.stops) }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -31,9 +55,6 @@ export default {
       type: Object,
       default: () => {},
     },
-  },
-  data() {
-    return {};
   },
   computed: {
     companyImage() {
@@ -70,6 +91,15 @@ export default {
       ).getMinutes();
       return `${dateDurationHours}ч ${dateDurationMinutes}м`;
     },
+    transfersQuantity(stops) {
+      const transfersQuantity = stops.length;
+      const transfersQuantityText =
+        transfersQuantity > 1 ? "пересадки" : "пересадка";
+      return `${transfersQuantity} ${transfersQuantityText}`;
+    },
+    stopsName(stops) {
+      return stops.toString();
+    },
   },
 };
 </script>
@@ -77,6 +107,7 @@ export default {
 <style lang="sass">
 .aviasales-fly-card
   padding: 20px
+  transition-duration: 0.3s
   &__header
     display: flex
     justify-content: space-between
@@ -85,4 +116,21 @@ export default {
       font-size: 24px
       font-weight: 600
       color: #2196F3
+  &__body
+    margin-top: 25px
+    display: flex
+    flex-direction: column
+    gap: 10px
+    &__segment
+      display: flex
+      justify-content: space-between
+    &__segment__box
+      min-width: 110px
+    &__segment__box-header
+      font-size: 12px
+      font-weight: 600
+      color: #A0B0B9
+      text-transform: uppercase
+    &__segment__box-value
+      margin-top: 5px
 </style>
